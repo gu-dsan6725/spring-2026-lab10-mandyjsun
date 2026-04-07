@@ -19,6 +19,9 @@ import requests
 from ddgs import DDGS
 from strands.tools.decorator import tool
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 
 # Configure logging
 logging.basicConfig(
@@ -281,4 +284,129 @@ def get_directions(
 
     except Exception as e:
         logger.error(f"[Tool] get_directions failed: {e}")
+        return json.dumps({"error": str(e)})
+
+
+@tool
+def get_current_time(location: str) -> str:
+    """
+    Get the current local time for a given city using Python's zoneinfo.
+
+    Args:
+        location: City name (e.g. 'Tokyo', 'New York', 'London')
+
+    Returns:
+        JSON string with current time, timezone name, and UTC offset
+    """
+    try:
+        logger.info(f"[Tool] get_current_time: location='{location}'")
+
+        # Simple city -> timezone mapping
+        timezone_map = {
+            "tokyo": "Asia/Tokyo",
+            "new york": "America/New_York",
+            "london": "Europe/London",
+            "paris": "Europe/Paris",
+            "los angeles": "America/Los_Angeles",
+            "chicago": "America/Chicago",
+            "denver": "America/Denver",
+            "washington dc": "America/New_York",
+            "washington": "America/New_York",
+            "berlin": "Europe/Berlin",
+            "sydney": "Australia/Sydney",
+            "toronto": "America/Toronto",
+            "dubai": "Asia/Dubai",
+            "singapore": "Asia/Singapore",
+        }
+
+        key = location.strip().lower()
+
+        if key not in timezone_map:
+            raise ValueError(f"Unsupported location: {location}")
+
+        tz_name = timezone_map[key]
+        now = datetime.now(ZoneInfo(tz_name))
+
+        # Format UTC offset like +09:00
+        offset_raw = now.strftime("%z")  # e.g. +0900
+        offset_formatted = f"{offset_raw[:3]}:{offset_raw[3:]}"
+
+        result = {
+            "location": location,
+            "timezone": tz_name,
+            "local_time": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "timezone_abbreviation": now.strftime("%Z"),
+            "utc_offset": offset_formatted,
+        }
+
+        logger.info(
+            f"[Tool] get_current_time: {location} -> {result['local_time']} ({result['timezone_abbreviation']})"
+        )
+
+        return json.dumps(result, indent=2)
+
+    except Exception as e:
+        logger.error(f"[Tool] get_current_time failed: {e}")
+        return json.dumps({"error": str(e)})
+    
+
+@tool
+def get_exchange_rate(
+    base_currency: str,
+    target_currency: str,
+    amount: float = 1.0
+) -> str:
+    """
+    Get the current exchange rate and converted amount using Frankfurter API.
+
+    Args:
+        base_currency: Base currency code (e.g. 'USD')
+        target_currency: Target currency code (e.g. 'EUR')
+        amount: Amount to convert (default: 1.0)
+
+    Returns:
+        JSON string with exchange rate and converted amount
+    """
+    try:
+        logger.info(
+            f"[Tool] get_exchange_rate: {amount} {base_currency} -> {target_currency}"
+        )
+
+        base = base_currency.upper().strip()
+        target = target_currency.upper().strip()
+
+        response = requests.get(
+            "https://api.frankfurter.app/latest",
+            params={
+                "from": base,
+                "to": target,
+            },
+            timeout=HTTP_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        if "rates" not in data or target not in data["rates"]:
+            raise ValueError(f"Invalid currency code: {base} or {target}")
+
+        rate = data["rates"][target]
+        converted_amount = amount * rate
+
+        result = {
+            "base_currency": base,
+            "target_currency": target,
+            "exchange_rate": rate,
+            "amount": amount,
+            "converted_amount": round(converted_amount, 4),
+            "date": data.get("date"),
+        }
+
+        logger.info(
+            f"[Tool] get_exchange_rate: rate={rate}, converted={converted_amount}"
+        )
+
+        return json.dumps(result, indent=2)
+
+    except Exception as e:
+        logger.error(f"[Tool] get_exchange_rate failed: {e}")
         return json.dumps({"error": str(e)})

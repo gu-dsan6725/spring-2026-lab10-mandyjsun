@@ -60,10 +60,10 @@ Submit the following files (all committed to this repo):
 
 | File | Description |
 |---|---|
-| `analysis.md` | Hand-written analysis (overall + one scenario deep dive) |
-| `debug.log` | Full evaluation run output |
-| `metrics.txt` | Generated evaluation summary |
-| `eval_metrics.json` | Generated evaluation metrics JSON |
+| `analysis.md` | Hand-written analysis (overall + one scenario deep dive) |   x 
+| `debug.log` | Full evaluation run output |.   x 
+| `metrics.txt` | Generated evaluation summary |.  x 
+| `eval_metrics.json` | Generated evaluation metrics JSON |.   x 
 
 ### Grading Rubric
 

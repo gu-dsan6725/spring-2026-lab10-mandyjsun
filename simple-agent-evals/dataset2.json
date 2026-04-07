@@ -1,0 +1,37 @@
+[
+  {
+    "input": "What time is it in London right now?",
+    "expected_output": "The current local time in London including timezone name (Europe/London), timezone abbreviation (GMT or BST), and the correct UTC offset depending on daylight saving time.",
+    "expected_tools": ["get_current_time"],
+    "category": "timezone",
+    "difficulty": "easy"
+  },
+  {
+    "input": "Tell me the current time in Tokyo and Paris.",
+    "expected_output": "The current local time in Tokyo (Asia/Tokyo, JST, UTC+09:00) and the current local time in Paris including timezone name (Europe/Paris), timezone abbreviation (CET or CEST), and the correct UTC offset depending on daylight saving time.",
+    "expected_tools": ["get_current_time"],
+    "category": "timezone",
+    "difficulty": "medium"
+  },
+  {
+    "input": "Convert 100 USD to EUR.",
+    "expected_output": "The USD to EUR exchange rate and the converted amount for 100 USD, including the rate and resulting value.",
+    "expected_tools": ["get_exchange_rate"],
+    "category": "currency",
+    "difficulty": "easy"
+  },
+  {
+    "input": "What is the exchange rate from GBP to JPY and how much is 50 GBP in JPY?",
+    "expected_output": "The GBP to JPY exchange rate and the converted amount for 50 GBP, including the rate and resulting value.",
+    "expected_tools": ["get_exchange_rate"],
+    "category": "currency",
+    "difficulty": "medium"
+  },
+  {
+    "input": "I am planning a business trip from New York to Tokyo. How long is the flight route by driving to JFK first, what is the current time in Tokyo, what is the weather there, what is the USD to JPY exchange rate, and what are the top business hotels in Shinjuku?",
+    "expected_output": "Driving directions from Manhattan to JFK Airport with distance and time, the current local time in Tokyo including timezone info (Asia/Tokyo, JST, UTC+09:00), current Tokyo weather with temperature, the USD to JPY exchange rate with converted value, and a list of recommended business hotels in the Shinjuku area of Tokyo.",
+    "expected_tools": ["get_directions", "get_current_time", "get_weather", "get_exchange_rate", "duckduckgo_search"],
+    "category": "multi_tool",
+    "difficulty": "hard"
+  }
+]
